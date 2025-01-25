@@ -1,0 +1,32 @@
+FROM jenkins/ssh-agent:debian-jdk17
+
+#Installing dependencies
+USER root
+RUN apt-get update && apt-get -y install \
+	ansible \
+	sudo \
+	wget \
+	unzip \
+	curl
+
+# Configuring sudo access for jenkins user for Ansible
+RUN mkdir -p /etc/sudoers.d
+RUN echo "jenkins ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/jenkins
+RUN usermod -a -G sudo jenkins
+
+# Installing AWS CLI
+WORKDIR /home/jenkins/awscli
+
+#RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+
+RUN unzip awscliv2.zip
+RUN ./aws/install
+
+#Installing Terraform
+WORKDIR /home/jenkins
+
+RUN  wget "https://releases.hashicorp.com/terraform/1.10.4/terraform_1.10.4_linux_amd64.zip"
+RUN unzip terraform_1.10.4_linux_amd64.zip -d /usr/local/bin
+RUN chmod +x /usr/local/bin/terraform
+
