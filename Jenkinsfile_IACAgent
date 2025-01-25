@@ -1,0 +1,17 @@
+pipeline {
+
+    agent none
+
+    stages {
+        stage('Infrastructure health check') {
+            agent {label 'jenkins-iac-agent'}
+            steps {
+                    sh 'terraform --version'
+                    sh 'ansible --version'
+                    sh 'aws --version'
+            }
+        }
+        
+    }
+}
+
